@@ -5,48 +5,74 @@ public class Node {
 	private Node N, W, S, E;
 
 	public Node() {
-		checked = false;
+		this.checked = false;
 	}
 
 	public void createNeighbour(String direction) {
 		switch (direction) {
 		case "N":
 			N = new Node();
-			N.S = this;
-			if (W.N == null) {
-				W.N = new Node();
-				W.N.S = W;
+			N.setS(this);
+			if (W.getN() == null) {
+				W.setN(new Node());
+				W.getN().setS(W);
 			}
-			N.W = W.N;
-			W.N.E = N;
-			if (E.N == null) {
-				E.N = new Node();
-				E.N.S = E;
+			N.setW(W.getN());
+			W.getN().setE(N);
+			if (E.getN() == null) {
+				E.setN(new Node());
+				E.getN().setS(E);
 			}
-			N.E = E.N;
-			E.N.W = N;
+			N.setE(E.getN());
+			E.getN().setW(N);
 			break;
 		case "W":
-			W = new Node();
-			if (N.W == null) 
-				N.W = new Node();
-			W.N = N.W;
-			if (S.W == null)
-				S.W = new Node();
-			W.S = S.W;
 			break;
 		case "S":
-			S = new Node();
-			if (W.S == null)
-				W.S = new Node();
-			S.W = W.S;
-			if (E.S == null)
-				E.S = new Node();
-			S.E = E.S;
 			break;
 		case "E":
 			break;
 		}
+	}
+
+	public boolean isChecked() {
+		return checked;
+	}
+
+	public void setChecked(boolean checked) {
+		this.checked = checked;
+	}
+
+	public Node getN() {
+		return N;
+	}
+
+	public void setN(Node n) {
+		N = n;
+	}
+
+	public Node getW() {
+		return W;
+	}
+
+	public void setW(Node w) {
+		W = w;
+	}
+
+	public Node getS() {
+		return S;
+	}
+
+	public void setS(Node s) {
+		S = s;
+	}
+
+	public Node getE() {
+		return E;
+	}
+
+	public void setE(Node e) {
+		E = e;
 	}
 
 }

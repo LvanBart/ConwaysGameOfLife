@@ -30,7 +30,7 @@ public class Application extends javafx.application.Application {
 
 	private int scale = 10;
 	private int barHeight = 30;
-	private Group group = new Group();
+	private Group group;
 	private ArrayList<Rectangle> rectList = new ArrayList<Rectangle>();
 	//private HashMap<int[], Rectangle> rectMap = new HashMap<int[], Rectangle>();
 	private String currentPattern = "glider";
@@ -43,9 +43,9 @@ public class Application extends javafx.application.Application {
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
+		group = new Group();
 		
 		
-		// TODO This is dummy stuff
 		BorderPane bp = new BorderPane();
 
 		tl = new Timeline();
@@ -66,6 +66,45 @@ public class Application extends javafx.application.Application {
 		bp.setTop(setUpControls());
 
 		Scene scene = new Scene(bp);
+		scene.addEventFilter(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+
+			@Override
+			public void handle(MouseEvent event) {
+				
+				if (event.getY() < barHeight) {
+					// Do nothing if mouse click is in the buttons bar
+					return;
+				}
+				
+				int worldX, worldY;
+				double mouseX = event.getX() - windowWidth / 2;
+				double mouseY = event.getY() - barHeight - (windowHeight-barHeight)/2;
+				
+				// convert scene mouse x and y position to world x and y position
+				if (mouseX < 0) {
+					worldX = (int)(mouseX / scale) - 1;
+				} else {
+					worldX = (int)(mouseX / scale);
+				}
+				if (mouseY < 0) {
+					worldY = (int)(mouseY / scale) - 1;
+				} else {
+					worldY = (int)(mouseY / scale);
+				}
+				
+				// toggle cells on/off
+				if (!world.checkAlive(new int[]{worldX, worldY})) {
+					world.tobealive(worldX, worldY);
+					Rectangle rect = new Rectangle(worldX * scale, worldY * scale, scale, scale);
+					rectList.add(rect);
+					group.getChildren().add(rect);
+				} else {
+					world.removeAlive(new int[]{worldX, worldY});
+					drawCells(group);
+				}
+			}
+			
+		});
 
 		primaryStage.setWidth(windowWidth);
 		primaryStage.setHeight(windowHeight);

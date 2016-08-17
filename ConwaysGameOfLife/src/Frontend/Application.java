@@ -214,7 +214,6 @@ public class Application extends javafx.application.Application {
 				group.getChildren().removeAll(rectList);//Clear the rectangles from the group.
 				world.getAlive().clear(); //Purge the world.
 				rectList.clear(); //Clear out all the rectangle representations.
-				//Reset the size? Maybe not.
 				
  				int[][] pattern = Pattern.getPattern(currentPattern, 0, 0); //Below re-used from the pattern button code.
  				for (int[] coords: pattern) {

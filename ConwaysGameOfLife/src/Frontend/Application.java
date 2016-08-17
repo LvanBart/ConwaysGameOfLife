@@ -184,7 +184,6 @@ public class Application extends javafx.application.Application {
 	public void changeTimer(Timeline timer) {
 		
 		KeyFrame kf = new KeyFrame(sliderTime, new EventHandler<ActionEvent>() {
-			int i = 0;
 
 			@Override
 			public void handle(ActionEvent t) { // Every frame.
@@ -200,10 +199,37 @@ public class Application extends javafx.application.Application {
 	public HBox setUpControls() {
 		HBox buttonBox = new HBox();
 
-		double speedMin = 0.1, speedMax = 4.0, speedDefault = 1.0;
+		double speedMin = 0.1, speedMax = 4.0, speedDefault = 1.0; //ranges for slider.
 		Button reset, play, pause, step, viewShowMore, viewShowLess;
 		reset = new Button("\u2B6F"); // Unicode character for an anticlockwise
 										// circular arrow.
+										//Currently doesn't work in windows,
+										//As the unicode font it uses doesn't 
+										//show this character.
+		reset.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				Boolean timerWasRunning = (tl.getStatus() == Status.RUNNING); 
+				tl.stop(); //Stop the timeline. Unsure if strictly necessary. Maybe a threading thing.
+				group.getChildren().removeAll(rectList);//Clear the rectangles from the group.
+				world.getAlive().clear(); //Purge the world.
+				rectList.clear(); //Clear out all the rectangle representations.
+				
+ 				int[][] pattern = Pattern.getPattern(currentPattern, 0, 0); //Below re-used from the pattern button code.
+ 				for (int[] coords: pattern) {
+ 					//Populate the grid with the current combo choice.
+ 					int x = coords[0];
+ 					int y = coords[1];
+ 				
+ 					world.tobealive(x, y);
+ 					
+ 					Rectangle rect = new Rectangle(x * scale, y * scale, scale, scale);
+ 					group.getChildren().add(rect);
+ 					rectList.add(rect);
+ 				}		
+ 				if (timerWasRunning) tl.play(); //Start the timeline again.
+			}
+		});
 		play = new Button("\u23F5"); // Unicode character for a small rightward
 										// filled isosceles triangle.
 		play.setOnAction(new EventHandler<ActionEvent>() {
@@ -228,15 +254,13 @@ public class Application extends javafx.application.Application {
 		step.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				System.out.println(tl.getKeyFrames());
- 				// tl.
- 				if (tl.getStatus() != Status.RUNNING) {
- 					tl.stop(); //Stop because we can't change cycle count on a non-stopped timeline.
- 					tl.setCycleCount(1); //Set the cycle count such that play will only tick through one frame.
- 					tl.play(); // //Make the timeline play, which should go for one cycle.
- 					tl.setCycleCount(Timeline.INDEFINITE); //Next time the timeline plays, we assume we want it to be indefinite again.
- 				}
- 				else System.out.println("Cannot Step while running.");
+				if (tl.getStatus() != Status.RUNNING) {
+					tl.stop(); //Stop because we can't change cycle count on a non-stopped timeline.
+					tl.setCycleCount(1); //Set the cycle count such that play will only tick through one frame.
+					tl.play(); // //Make the timeline play, which should go for one cycle.
+					tl.setCycleCount(Timeline.INDEFINITE); //Next time the timeline plays, we assume we want it to be indefinite again.
+				}
+				else System.out.println("Cannot Step while running."); //This was a debugging message, but turns out it's actually decent feedback.
 			}
 		});
 		viewShowMore = new Button("+"); // Just a plus.
@@ -268,31 +292,18 @@ public class Application extends javafx.application.Application {
 		});
 		
 		Slider runSpeed = new Slider(speedMin, speedMax, speedDefault);
-		runSpeed.setOnMouseReleased(new EventHandler<MouseEvent>() {
-			@Override
+		runSpeed.setOnMouseReleased(new EventHandler<MouseEvent>() { //This currently only works for when a mouse drag happens
+			@Override												//On the slider. Arrow keys move the pip but don't adjust.
 			public void handle(MouseEvent event) {
-				sliderTime = Duration.millis(baseTickTime * runSpeed.getValue());
-				Boolean timerWasRunning = (tl.getStatus() == Status.RUNNING);
-				changeTimer(tl);
-				if (timerWasRunning)
-					tl.play();
+				sliderTime = Duration.millis(baseTickTime * runSpeed.getValue()); //Recalculate the slider time.
+				Boolean timerWasRunning = (tl.getStatus() == Status.RUNNING); //Store whether we were already running.
+				changeTimer(tl); //Do the timer updating, which involves stopping the tl and changing the keyframes.
+				if (timerWasRunning) //If the timer was running before the change...
+					tl.play();	//start it again.
 			}
 		});
-		ComboBox<String> patternChooser = new ComboBox<String>(); // TODO
-																	// Replace
-																	// Object
-																	// typed
-																	// ComboBox
-																	// with
-																	// Pattern
-																	// typed
-																	// ComboBox
-																	// when
-																	// patterns
-																	// are
-																	// added.
-		Pattern pattern = new Pattern();
-		patternChooser.getItems().addAll(pattern.patternNames);
+		ComboBox<String> patternChooser = new ComboBox<String>(); //Combo box contains strings for names of patterns from Pattern.
+		patternChooser.getItems().addAll(Pattern.patternNames);
 		
 		patternChooser.setOnAction(new EventHandler<ActionEvent>() {
  			@Override

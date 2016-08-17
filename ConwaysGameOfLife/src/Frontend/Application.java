@@ -33,6 +33,7 @@ public class Application extends javafx.application.Application {
 	private Group group = new Group();
 	private ArrayList<Rectangle> rectList = new ArrayList<Rectangle>();
 	//private HashMap<int[], Rectangle> rectMap = new HashMap<int[], Rectangle>();
+	private String currentPattern = "glider";
 	
 	World world = new World();
 
@@ -246,6 +247,31 @@ public class Application extends javafx.application.Application {
 																	// added.
 		Pattern pattern = new Pattern();
 		patternChooser.getItems().addAll(pattern.patternNames);
+		
+		patternChooser.setOnAction(new EventHandler<ActionEvent>() {
+ 			@Override
+ 			public void handle(ActionEvent event) {
+ 				currentPattern = patternChooser.getSelectionModel().getSelectedItem();
+ 				System.out.println(currentPattern);
+ 				int[][] pattern = Pattern.getPattern(currentPattern, 0, 0);
+ 				group.getChildren().removeAll(rectList);
+ 				rectList.clear();
+ 				world.getAlive().clear();
+ 				for (int[] coords: pattern) {
+ 					int x = coords[0];
+ 					int y = coords[1];
+ 				
+ 					world.tobealive(x, y);
+ 					
+ 					Rectangle rect = new Rectangle(x * scale, y * scale, scale, scale);
+ 					group.getChildren().add(rect);
+ 					rectList.add(rect);
+ 				}		
+ 				
+ 			}
+ 			
+ 		});
+		
 		buttonBox.getChildren().addAll(reset, play, pause, step, runSpeed, patternChooser,
 				new Separator(Orientation.VERTICAL), viewShowMore, viewShowLess);
 		buttonBox.setMinHeight(barHeight);

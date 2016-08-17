@@ -266,14 +266,14 @@ public class Application extends javafx.application.Application {
 		});
 		
 		Slider runSpeed = new Slider(speedMin, speedMax, speedDefault);
-		runSpeed.setOnMouseReleased(new EventHandler<MouseEvent>() {
-			@Override
+		runSpeed.setOnMouseReleased(new EventHandler<MouseEvent>() { //This currently only works for when a mouse drag happens
+			@Override												//On the slider. Arrow keys move the pip but don't adjust.
 			public void handle(MouseEvent event) {
-				sliderTime = Duration.millis(baseTickTime * runSpeed.getValue());
-				Boolean timerWasRunning = (tl.getStatus() == Status.RUNNING);
-				changeTimer(tl);
-				if (timerWasRunning)
-					tl.play();
+				sliderTime = Duration.millis(baseTickTime * runSpeed.getValue()); //Recalculate the slider time.
+				Boolean timerWasRunning = (tl.getStatus() == Status.RUNNING); //Store whether we were already running.
+				changeTimer(tl); //Do the timer updating, which involves stopping the tl and changing the keyframes.
+				if (timerWasRunning) //If the timer was running before the change...
+					tl.play();	//start it again.
 			}
 		});
 		ComboBox<String> patternChooser = new ComboBox<String>(); //Combo box contains strings for names of patterns from Pattern.

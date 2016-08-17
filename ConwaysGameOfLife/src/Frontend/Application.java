@@ -3,7 +3,7 @@ package Frontend;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import Backend.Pattern;
+import Backend.*;
 import javafx.animation.Animation.Status;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -33,10 +33,10 @@ public class Application extends javafx.application.Application {
 	private int scale = 10;
 	private int barHeight = 30;
 	private Group group = new Group();
-	private int duration = 100;
-	private HashMap<int[], Rectangle> rectMap = new HashMap<int[], Rectangle>();
+	private ArrayList<Rectangle> rectList = new ArrayList<Rectangle>();
+	//private HashMap<int[], Rectangle> rectMap = new HashMap<int[], Rectangle>();
 	
-	// World world = new World();
+	World world = new World();
 
 	Timeline tl;
 	final int baseTickTime = 250;
@@ -44,6 +44,8 @@ public class Application extends javafx.application.Application {
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
+		
+		
 		// TODO This is dummy stuff
 		BorderPane bp = new BorderPane();
 
@@ -55,6 +57,9 @@ public class Application extends javafx.application.Application {
 		tl.playFromStart();
 
 		StackPane root = DrawCenterPane(group);
+		world.tobealive(0,0);
+		world.tobealive(1,0);
+		world.tobealive(-1,0);
 		drawCells(group);
 
 		bp.setCenter(root);
@@ -75,18 +80,16 @@ public class Application extends javafx.application.Application {
 	}
 
 	public StackPane DrawCenterPane(Group group) {
+		
 		// Will redraw the grid based on window width & height and scale.
 		int minX = -(windowWidth / 2);
 		int minY = -(windowHeight - barHeight) / 2;
 		int maxX = windowWidth / 2;
 		int maxY = (windowHeight - barHeight) / 2;
 		StackPane pane = new StackPane();
-		pane.autosize();
-		/*
-		 * number of line in x = width / scale
-		 * mid point at x = 0
-		 * 
-		 */
+		//pane.autosize();
+		
+		//group.getChildren().clear();
 		
 		for (int i = 0; i <= maxX / scale; i++) {
 			Line line = new Line(i * scale, minY, i * scale, maxY);
@@ -112,58 +115,25 @@ public class Application extends javafx.application.Application {
 			group.getChildren().add(line);
 		}
 		
-		/*
-		// Draw horizontal lines
-		System.out.println(windowWidth / scale);
-		for (int i = 0; i < windowWidth / scale; i++) {
-			Line line = new Line(minX + i * scale, minY, minX + i * scale, maxY);
-			line.setStroke(Color.LIGHTGREY);
-			group.getChildren().add(line);
-		}
-
-		// Draw vertical lines
-		System.out.println(windowHeight / scale);
-		for (int i = 0; i < (windowHeight - barHeight) / scale; i++) {
-			Line line = new Line(minX, minY + i * scale, maxX, minY + i * scale);
-			line.setStroke(Color.LIGHTGREY);
-			group.getChildren().add(line);
-		}
-		*/
 		return pane;
 	}
 	
 	public void drawCells(Group group) {
-		Rectangle r1 = new Rectangle();
-		r1.setLayoutX(0 * scale);
-		r1.setLayoutY(0 * scale);
-		r1.setWidth(scale);
-		r1.setHeight(scale);
-		r1.setFill(Color.BLUE);
-		group.getChildren().add(r1);
-
-		Rectangle r2 = new Rectangle();
-		r2.setLayoutX(-10 * scale);
-		r2.setLayoutY(-10 * scale);
-		r2.setWidth(scale);
-		r2.setHeight(scale);
-		r2.setFill(Color.BLACK);
-		group.getChildren().add(r2);
-
-		Rectangle r3 = new Rectangle();
-		r3.setLayoutX(30 * scale);
-		r3.setLayoutY(10 * scale);
-		r3.setWidth(scale);
-		r3.setHeight(scale);
-		r3.setFill(Color.BLACK);
-		group.getChildren().add(r3);
-
-		Rectangle r4 = new Rectangle();
-		r4.setLayoutX(80 * scale);
-		r4.setLayoutY(90 * scale);
-		r4.setWidth(scale);
-		r4.setHeight(scale);
-		r4.setFill(Color.RED);
-		group.getChildren().add(r4);
+		ArrayList<int[]> alive = world.getAlive();
+		group.getChildren().removeAll(rectList);
+		rectList.clear();
+		for (int[] cell : alive) {
+			//System.out.println(cell[1]);
+			Rectangle rect = new Rectangle();
+			rect.setX(cell[0] * scale);
+			rect.setY(cell[1] * scale);
+			rect.setFill(Color.BLACK);
+			rect.setWidth(scale);
+			rect.setHeight(scale);
+			//System.out.println(rect);
+			group.getChildren().add(rect);
+			rectList.add(rect);
+		}
 	}
 
 	public static void main(String[] args) {
@@ -184,14 +154,18 @@ public class Application extends javafx.application.Application {
 
 			@Override
 			public void handle(ActionEvent t) { // Every frame.
-//				world.updateworld;
+				world.updateworld();
+				//System.out.println(world.getAlive());
+				//group.getChildren().clear();
+				//DrawCenterPane(group);
+				drawCells(group);
 			}
 		});
 		timer.stop(); // Pretty sure this is necessary.
 		timer.getKeyFrames().setAll(kf);
 
 	}
-
+	
 	public HBox setUpControls() {
 		HBox buttonBox = new HBox();
 

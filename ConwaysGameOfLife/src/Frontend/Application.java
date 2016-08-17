@@ -33,10 +33,10 @@ public class Application extends javafx.application.Application {
 	private int scale = 10;
 	private int barHeight = 30;
 	private Group group = new Group();
-	private ArrayList<Line> vlineList = new ArrayList<Line>();
-	private ArrayList<Line> hlineList = new ArrayList<Line>();
 	private int duration = 100;
 	private HashMap<int[], Rectangle> rectMap = new HashMap<int[], Rectangle>();
+	
+	// World world = new World();
 
 	Timeline tl;
 	final int baseTickTime = 250;
@@ -55,60 +55,17 @@ public class Application extends javafx.application.Application {
 		tl.playFromStart();
 
 		StackPane root = DrawCenterPane(group);
+		drawCells(group);
 
 		bp.setCenter(root);
 		bp.setTop(setUpControls());
 
 		root.getChildren().add(group);
-		Rectangle r1 = new Rectangle();
-		r1.setX(0 * scale);
-		r1.setY(0 * scale);
-		r1.setWidth(scale);
-		r1.setHeight(scale);
-		r1.setFill(Color.BLUE);
-		group.getChildren().add(r1);
-
-		Rectangle r2 = new Rectangle();
-		r2.setX(-10 * scale);
-		r2.setY(-10 * scale);
-		r2.setWidth(scale);
-		r2.setHeight(scale);
-		r2.setFill(Color.BLACK);
-		group.getChildren().add(r2);
-
-		Rectangle r3 = new Rectangle();
-		r3.setX(30 * scale);
-		r3.setY(10 * scale);
-		r3.setWidth(scale);
-		r3.setHeight(scale);
-		r3.setFill(Color.BLACK);
-		group.getChildren().add(r3);
-
-		Rectangle r4 = new Rectangle();
-		r4.setX(80 * scale);
-		r4.setY(90 * scale);
-		r4.setWidth(scale);
-		r4.setHeight(scale);
-		r4.setFill(Color.RED);
-		group.getChildren().add(r4);
 
 		Scene scene = new Scene(bp);
 
-		// World world = new World();
-
-		// KeyFrame frame = new KeyFrame(Duration.millis(duration), new
-		// EventHandler<ActionEvent>() {
-		//
-		// @Override
-		// public void handle(ActionEvent t) {
-		// //world.updateWorld();
-		//
-		// }
-		//
-		// });
-
-		primaryStage.setWidth(1000);
-		primaryStage.setHeight(830);
+		primaryStage.setWidth(windowWidth);
+		primaryStage.setHeight(windowHeight);
 
 		primaryStage.setScene(scene);
 		primaryStage.centerOnScreen();
@@ -125,23 +82,88 @@ public class Application extends javafx.application.Application {
 		int maxY = (windowHeight - barHeight) / 2;
 		StackPane pane = new StackPane();
 		pane.autosize();
-
+		/*
+		 * number of line in x = width / scale
+		 * mid point at x = 0
+		 * 
+		 */
+		
+		for (int i = 0; i <= maxX / scale; i++) {
+			Line line = new Line(i * scale, minY, i * scale, maxY);
+			line.setStroke(Color.LIGHTGREY);
+			group.getChildren().add(line);
+		}
+		
+		for (int i = 0; i >= minX / scale; i--) {
+			Line line = new Line(i * scale, minY, i * scale, maxY);
+			line.setStroke(Color.LIGHTGREY);
+			group.getChildren().add(line);
+		}
+		
+		for (int i = 0; i <= maxY / scale; i++) {
+			Line line = new Line(minX, i * scale, maxX, i * scale);
+			line.setStroke(Color.LIGHTGREY);
+			group.getChildren().add(line);
+		}
+		
+		for (int i = 0; i >= minY / scale; i--) {
+			Line line = new Line(minX, i * scale, maxX, i * scale);
+			line.setStroke(Color.LIGHTGREY);
+			group.getChildren().add(line);
+		}
+		
+		/*
 		// Draw horizontal lines
+		System.out.println(windowWidth / scale);
 		for (int i = 0; i < windowWidth / scale; i++) {
 			Line line = new Line(minX + i * scale, minY, minX + i * scale, maxY);
 			line.setStroke(Color.LIGHTGREY);
-			vlineList.add(line);
 			group.getChildren().add(line);
 		}
 
 		// Draw vertical lines
+		System.out.println(windowHeight / scale);
 		for (int i = 0; i < (windowHeight - barHeight) / scale; i++) {
 			Line line = new Line(minX, minY + i * scale, maxX, minY + i * scale);
 			line.setStroke(Color.LIGHTGREY);
-			hlineList.add(line);
 			group.getChildren().add(line);
 		}
+		*/
 		return pane;
+	}
+	
+	public void drawCells(Group group) {
+		Rectangle r1 = new Rectangle();
+		r1.setLayoutX(0 * scale);
+		r1.setLayoutY(0 * scale);
+		r1.setWidth(scale);
+		r1.setHeight(scale);
+		r1.setFill(Color.BLUE);
+		group.getChildren().add(r1);
+
+		Rectangle r2 = new Rectangle();
+		r2.setLayoutX(-10 * scale);
+		r2.setLayoutY(-10 * scale);
+		r2.setWidth(scale);
+		r2.setHeight(scale);
+		r2.setFill(Color.BLACK);
+		group.getChildren().add(r2);
+
+		Rectangle r3 = new Rectangle();
+		r3.setLayoutX(30 * scale);
+		r3.setLayoutY(10 * scale);
+		r3.setWidth(scale);
+		r3.setHeight(scale);
+		r3.setFill(Color.BLACK);
+		group.getChildren().add(r3);
+
+		Rectangle r4 = new Rectangle();
+		r4.setLayoutX(80 * scale);
+		r4.setLayoutY(90 * scale);
+		r4.setWidth(scale);
+		r4.setHeight(scale);
+		r4.setFill(Color.RED);
+		group.getChildren().add(r4);
 	}
 
 	public static void main(String[] args) {
@@ -162,8 +184,7 @@ public class Application extends javafx.application.Application {
 
 			@Override
 			public void handle(ActionEvent t) { // Every frame.
-				System.out.println("test " + i + " " + sliderTime);
-				i++;
+//				world.updateworld;
 			}
 		});
 		timer.stop(); // Pretty sure this is necessary.
@@ -207,8 +228,35 @@ public class Application extends javafx.application.Application {
 			}
 		});
 		viewShowMore = new Button("+"); // Just a plus.
+		viewShowMore.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent arg0) {
+				if (scale <= 20) {
+					scale++;
+					group.getChildren().clear();
+					DrawCenterPane(group);
+					drawCells(group);
+				}
+			}
+			
+		});
 		viewShowLess = new Button("\u2212"); // Unicode for a more fitting minus
 												// symbol.
+		viewShowLess.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent arg0) {
+				if (scale > 1) {
+					scale--;
+					group.getChildren().clear();
+					DrawCenterPane(group);
+					drawCells(group);
+				}
+			}
+			
+		});
+		
 		Slider runSpeed = new Slider(speedMin, speedMax, speedDefault);
 		runSpeed.setOnMouseReleased(new EventHandler<MouseEvent>() {
 			@Override

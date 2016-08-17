@@ -303,8 +303,7 @@ public class Application extends javafx.application.Application {
 			}
 		});
 		ComboBox<String> patternChooser = new ComboBox<String>(); //Combo box contains strings for names of patterns from Pattern.
-		Pattern pattern = new Pattern();
-		patternChooser.getItems().addAll(pattern.patternNames);
+		patternChooser.getItems().addAll(Pattern.patternNames);
 		
 		patternChooser.setOnAction(new EventHandler<ActionEvent>() {
  			@Override

@@ -200,10 +200,18 @@ public class Application extends javafx.application.Application {
 	public HBox setUpControls() {
 		HBox buttonBox = new HBox();
 
-		double speedMin = 0.1, speedMax = 4.0, speedDefault = 1.0;
+		double speedMin = 0.1, speedMax = 4.0, speedDefault = 1.0; //ranges for slider.
 		Button reset, play, pause, step, viewShowMore, viewShowLess;
 		reset = new Button("\u2B6F"); // Unicode character for an anticlockwise
 										// circular arrow.
+		reset.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				//Clear the grid.
+				//Reset the size? Maybe not.
+				//Populate the grid with the current combo choice.
+			}
+		});
 		play = new Button("\u23F5"); // Unicode character for a small rightward
 										// filled isosceles triangle.
 		play.setOnAction(new EventHandler<ActionEvent>() {

@@ -1,7 +1,6 @@
 package Frontend;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import Backend.*;
 import javafx.animation.Animation.Status;
@@ -19,7 +18,6 @@ import javafx.scene.control.Slider;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
@@ -27,8 +25,8 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 public class Application extends javafx.application.Application {
-	private final int windowWidth = 1000;
-	private final int windowHeight = 830;
+	private final int windowWidth = 1200;
+	private final int windowHeight = 900;
 
 	private int scale = 10;
 	private int barHeight = 30;
@@ -52,20 +50,19 @@ public class Application extends javafx.application.Application {
 		tl = new Timeline();
 		tl.setCycleCount(Timeline.INDEFINITE);
 
-		//changeTimer(tl);
+		changeTimer(tl);
+		tl.stop();
 
-		tl.playFromStart();
-
-		StackPane root = DrawCenterPane(group);
+		DrawCenterPane(group);
 		world.tobealive(0,0);
-		world.tobealive(1,0);
-		world.tobealive(-1,0);
+		world.tobealive(1,1);
+		world.tobealive(1,2);
+		world.tobealive(0,2);
+		world.tobealive(-1,2);
 		drawCells(group);
 
-		bp.setCenter(root);
+		bp.setCenter(group);
 		bp.setTop(setUpControls());
-
-		root.getChildren().add(group);
 
 		Scene scene = new Scene(bp);
 
@@ -79,17 +76,15 @@ public class Application extends javafx.application.Application {
 
 	}
 
-	public StackPane DrawCenterPane(Group group) {
+	public void DrawCenterPane(Group group) {
 		
 		// Will redraw the grid based on window width & height and scale.
 		int minX = -(windowWidth / 2);
 		int minY = -(windowHeight - barHeight) / 2;
 		int maxX = windowWidth / 2;
 		int maxY = (windowHeight - barHeight) / 2;
-		StackPane pane = new StackPane();
-		//pane.autosize();
 		
-		//group.getChildren().clear();
+		group.getChildren().clear();
 		
 		for (int i = 0; i <= maxX / scale; i++) {
 			Line line = new Line(i * scale, minY, i * scale, maxY);
@@ -97,7 +92,7 @@ public class Application extends javafx.application.Application {
 			group.getChildren().add(line);
 		}
 		
-		for (int i = 0; i >= minX / scale; i--) {
+		for (int i = -1; i >= minX / scale; i--) {
 			Line line = new Line(i * scale, minY, i * scale, maxY);
 			line.setStroke(Color.LIGHTGREY);
 			group.getChildren().add(line);
@@ -109,13 +104,13 @@ public class Application extends javafx.application.Application {
 			group.getChildren().add(line);
 		}
 		
-		for (int i = 0; i >= minY / scale; i--) {
+		for (int i = -1; i >= minY / scale; i--) {
 			Line line = new Line(minX, i * scale, maxX, i * scale);
 			line.setStroke(Color.LIGHTGREY);
 			group.getChildren().add(line);
 		}
 		
-		return pane;
+		//return pane;
 	}
 	
 	public void drawCells(Group group) {
@@ -123,17 +118,15 @@ public class Application extends javafx.application.Application {
 		group.getChildren().removeAll(rectList);
 		rectList.clear();
 		for (int[] cell : alive) {
-			//System.out.println(cell[1]);
 			Rectangle rect = new Rectangle();
 			rect.setX(cell[0] * scale);
 			rect.setY(cell[1] * scale);
 			rect.setFill(Color.BLACK);
 			rect.setWidth(scale);
 			rect.setHeight(scale);
-			//System.out.println(rect);
-			group.getChildren().add(rect);
 			rectList.add(rect);
 		}
+		group.getChildren().addAll(rectList);
 	}
 
 	public static void main(String[] args) {
@@ -149,15 +142,13 @@ public class Application extends javafx.application.Application {
 	 * level.
 	 */
 	public void changeTimer(Timeline timer) {
+		
 		KeyFrame kf = new KeyFrame(sliderTime, new EventHandler<ActionEvent>() {
 			int i = 0;
 
 			@Override
 			public void handle(ActionEvent t) { // Every frame.
 				world.updateworld();
-				//System.out.println(world.getAlive());
-				//group.getChildren().clear();
-				//DrawCenterPane(group);
 				drawCells(group);
 			}
 		});
@@ -208,7 +199,6 @@ public class Application extends javafx.application.Application {
 			public void handle(ActionEvent arg0) {
 				if (scale <= 20) {
 					scale++;
-					group.getChildren().clear();
 					DrawCenterPane(group);
 					drawCells(group);
 				}
@@ -223,7 +213,6 @@ public class Application extends javafx.application.Application {
 			public void handle(ActionEvent arg0) {
 				if (scale > 1) {
 					scale--;
-					group.getChildren().clear();
 					DrawCenterPane(group);
 					drawCells(group);
 				}

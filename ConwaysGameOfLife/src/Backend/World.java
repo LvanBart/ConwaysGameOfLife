@@ -130,7 +130,8 @@ public class World {
 		}
 		
 		for (int[] eachToChange : tempNeighbour) {
-			Alive.add(eachToChange);
+			if (!checkAlive(eachToChange))
+				Alive.add(eachToChange);
 		}
 
 	}

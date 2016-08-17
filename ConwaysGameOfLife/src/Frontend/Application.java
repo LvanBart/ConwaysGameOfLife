@@ -190,7 +190,14 @@ public class Application extends javafx.application.Application {
 			@Override
 			public void handle(ActionEvent event) {
 				System.out.println(tl.getKeyFrames());
-				// tl.
+ 				// tl.
+ 				if (tl.getStatus() != Status.RUNNING) {
+ 					tl.stop(); //Stop because we can't change cycle count on a non-stopped timeline.
+ 					tl.setCycleCount(1); //Set the cycle count such that play will only tick through one frame.
+ 					tl.play(); // //Make the timeline play, which should go for one cycle.
+ 					tl.setCycleCount(Timeline.INDEFINITE); //Next time the timeline plays, we assume we want it to be indefinite again.
+ 				}
+ 				else System.out.println("Cannot Step while running.");
 			}
 		});
 		viewShowMore = new Button("+"); // Just a plus.

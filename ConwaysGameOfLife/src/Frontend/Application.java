@@ -1,9 +1,8 @@
 package Frontend;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
-import Backend.Pattern;
+import Backend.*;
 import javafx.animation.Animation.Status;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -19,7 +18,6 @@ import javafx.scene.control.Slider;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
@@ -27,16 +25,17 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 public class Application extends javafx.application.Application {
-	private final int windowWidth = 1000;
-	private final int windowHeight = 830;
+	private final int windowWidth = 1200;
+	private final int windowHeight = 900;
 
 	private int scale = 10;
 	private int barHeight = 30;
-	private Group group = new Group();
-	private ArrayList<Line> vlineList = new ArrayList<Line>();
-	private ArrayList<Line> hlineList = new ArrayList<Line>();
-	private int duration = 100;
-	private HashMap<int[], Rectangle> rectMap = new HashMap<int[], Rectangle>();
+	private Group group;
+	private ArrayList<Rectangle> rectList = new ArrayList<Rectangle>();
+	//private HashMap<int[], Rectangle> rectMap = new HashMap<int[], Rectangle>();
+	private String currentPattern = "glider";
+	
+	World world = new World();
 
 	Timeline tl;
 	final int baseTickTime = 250;
@@ -44,71 +43,71 @@ public class Application extends javafx.application.Application {
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		// TODO This is dummy stuff
+		group = new Group();
+		
+		
 		BorderPane bp = new BorderPane();
 
 		tl = new Timeline();
 		tl.setCycleCount(Timeline.INDEFINITE);
 
-		//changeTimer(tl);
+		changeTimer(tl);
+		tl.stop();
 
-		tl.playFromStart();
+		DrawCenterPane(group);
+		world.tobealive(0,0);
+		world.tobealive(1,1);
+		world.tobealive(1,2);
+		world.tobealive(0,2);
+		world.tobealive(-1,2);
+		drawCells(group);
 
-		StackPane root = DrawCenterPane(group);
-
-		bp.setCenter(root);
+		bp.setCenter(group);
 		bp.setTop(setUpControls());
 
-		root.getChildren().add(group);
-		Rectangle r1 = new Rectangle();
-		r1.setX(0 * scale);
-		r1.setY(0 * scale);
-		r1.setWidth(scale);
-		r1.setHeight(scale);
-		r1.setFill(Color.BLUE);
-		group.getChildren().add(r1);
-
-		Rectangle r2 = new Rectangle();
-		r2.setX(-10 * scale);
-		r2.setY(-10 * scale);
-		r2.setWidth(scale);
-		r2.setHeight(scale);
-		r2.setFill(Color.BLACK);
-		group.getChildren().add(r2);
-
-		Rectangle r3 = new Rectangle();
-		r3.setX(30 * scale);
-		r3.setY(10 * scale);
-		r3.setWidth(scale);
-		r3.setHeight(scale);
-		r3.setFill(Color.BLACK);
-		group.getChildren().add(r3);
-
-		Rectangle r4 = new Rectangle();
-		r4.setX(80 * scale);
-		r4.setY(90 * scale);
-		r4.setWidth(scale);
-		r4.setHeight(scale);
-		r4.setFill(Color.RED);
-		group.getChildren().add(r4);
-
 		Scene scene = new Scene(bp);
+		scene.addEventFilter(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
 
-		// World world = new World();
+			@Override
+			public void handle(MouseEvent event) {
+				
+				if (event.getY() < barHeight) {
+					// Do nothing if mouse click is in the buttons bar
+					return;
+				}
+				
+				int worldX, worldY;
+				double mouseX = event.getX() - windowWidth / 2;
+				double mouseY = event.getY() - barHeight - (windowHeight-barHeight)/2;
+				
+				// convert scene mouse x and y position to world x and y position
+				if (mouseX < 0) {
+					worldX = (int)(mouseX / scale) - 1;
+				} else {
+					worldX = (int)(mouseX / scale);
+				}
+				if (mouseY < 0) {
+					worldY = (int)(mouseY / scale) - 1;
+				} else {
+					worldY = (int)(mouseY / scale);
+				}
+				
+				// toggle cells on/off
+				if (!world.checkAlive(new int[]{worldX, worldY})) {
+					world.tobealive(worldX, worldY);
+					Rectangle rect = new Rectangle(worldX * scale, worldY * scale, scale, scale);
+					rectList.add(rect);
+					group.getChildren().add(rect);
+				} else {
+					world.removeAlive(new int[]{worldX, worldY});
+					drawCells(group);
+				}
+			}
+			
+		});
 
-		// KeyFrame frame = new KeyFrame(Duration.millis(duration), new
-		// EventHandler<ActionEvent>() {
-		//
-		// @Override
-		// public void handle(ActionEvent t) {
-		// //world.updateWorld();
-		//
-		// }
-		//
-		// });
-
-		primaryStage.setWidth(1000);
-		primaryStage.setHeight(830);
+		primaryStage.setWidth(windowWidth);
+		primaryStage.setHeight(windowHeight);
 
 		primaryStage.setScene(scene);
 		primaryStage.centerOnScreen();
@@ -117,31 +116,57 @@ public class Application extends javafx.application.Application {
 
 	}
 
-	public StackPane DrawCenterPane(Group group) {
+	public void DrawCenterPane(Group group) {
+		
 		// Will redraw the grid based on window width & height and scale.
 		int minX = -(windowWidth / 2);
 		int minY = -(windowHeight - barHeight) / 2;
 		int maxX = windowWidth / 2;
 		int maxY = (windowHeight - barHeight) / 2;
-		StackPane pane = new StackPane();
-		pane.autosize();
-
-		// Draw horizontal lines
-		for (int i = 0; i < windowWidth / scale; i++) {
-			Line line = new Line(minX + i * scale, minY, minX + i * scale, maxY);
+		
+		group.getChildren().clear();
+		
+		for (int i = 0; i <= maxX / scale; i++) {
+			Line line = new Line(i * scale, minY, i * scale, maxY);
 			line.setStroke(Color.LIGHTGREY);
-			vlineList.add(line);
 			group.getChildren().add(line);
 		}
-
-		// Draw vertical lines
-		for (int i = 0; i < (windowHeight - barHeight) / scale; i++) {
-			Line line = new Line(minX, minY + i * scale, maxX, minY + i * scale);
+		
+		for (int i = -1; i >= minX / scale; i--) {
+			Line line = new Line(i * scale, minY, i * scale, maxY);
 			line.setStroke(Color.LIGHTGREY);
-			hlineList.add(line);
 			group.getChildren().add(line);
 		}
-		return pane;
+		
+		for (int i = 0; i <= maxY / scale; i++) {
+			Line line = new Line(minX, i * scale, maxX, i * scale);
+			line.setStroke(Color.LIGHTGREY);
+			group.getChildren().add(line);
+		}
+		
+		for (int i = -1; i >= minY / scale; i--) {
+			Line line = new Line(minX, i * scale, maxX, i * scale);
+			line.setStroke(Color.LIGHTGREY);
+			group.getChildren().add(line);
+		}
+		
+		//return pane;
+	}
+	
+	public void drawCells(Group group) {
+		ArrayList<int[]> alive = world.getAlive();
+		group.getChildren().removeAll(rectList);
+		rectList.clear();
+		for (int[] cell : alive) {
+			Rectangle rect = new Rectangle();
+			rect.setX(cell[0] * scale);
+			rect.setY(cell[1] * scale);
+			rect.setFill(Color.BLACK);
+			rect.setWidth(scale);
+			rect.setHeight(scale);
+			rectList.add(rect);
+		}
+		group.getChildren().addAll(rectList);
 	}
 
 	public static void main(String[] args) {
@@ -157,20 +182,21 @@ public class Application extends javafx.application.Application {
 	 * level.
 	 */
 	public void changeTimer(Timeline timer) {
+		
 		KeyFrame kf = new KeyFrame(sliderTime, new EventHandler<ActionEvent>() {
 			int i = 0;
 
 			@Override
 			public void handle(ActionEvent t) { // Every frame.
-				System.out.println("test " + i + " " + sliderTime);
-				i++;
+				world.updateworld();
+				drawCells(group);
 			}
 		});
 		timer.stop(); // Pretty sure this is necessary.
 		timer.getKeyFrames().setAll(kf);
 
 	}
-
+	
 	public HBox setUpControls() {
 		HBox buttonBox = new HBox();
 
@@ -208,12 +234,37 @@ public class Application extends javafx.application.Application {
 					tl.play(); // //Make the timeline play, which should go for one cycle.
 					tl.setCycleCount(Timeline.INDEFINITE); //Next time the timeline plays, we assume we want it to be indefinite again.
 				}
-				else System.out.println("Cannot Step while running."); //TODO This is a debugging message, we should delete this.
+				else System.out.println("Cannot Step while running."); //This was a debugging message, but turns out it's actually decent feedback.
 			}
 		});
 		viewShowMore = new Button("+"); // Just a plus.
+		viewShowMore.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent arg0) {
+				if (scale <= 20) {
+					scale++;
+					DrawCenterPane(group);
+					drawCells(group);
+				}
+			}
+			
+		});
 		viewShowLess = new Button("\u2212"); // Unicode for a more fitting minus
 												// symbol.
+		viewShowLess.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent arg0) {
+				if (scale > 1) {
+					scale--;
+					DrawCenterPane(group);
+					drawCells(group);
+				}
+			}
+			
+		});
+		
 		Slider runSpeed = new Slider(speedMin, speedMax, speedDefault);
 		runSpeed.setOnMouseReleased(new EventHandler<MouseEvent>() {
 			@Override
@@ -240,6 +291,31 @@ public class Application extends javafx.application.Application {
 																	// added.
 		Pattern pattern = new Pattern();
 		patternChooser.getItems().addAll(pattern.patternNames);
+		
+		patternChooser.setOnAction(new EventHandler<ActionEvent>() {
+ 			@Override
+ 			public void handle(ActionEvent event) {
+ 				currentPattern = patternChooser.getSelectionModel().getSelectedItem();
+ 				System.out.println(currentPattern);
+ 				int[][] pattern = Pattern.getPattern(currentPattern, 0, 0);
+ 				group.getChildren().removeAll(rectList);
+ 				rectList.clear();
+ 				world.getAlive().clear();
+ 				for (int[] coords: pattern) {
+ 					int x = coords[0];
+ 					int y = coords[1];
+ 				
+ 					world.tobealive(x, y);
+ 					
+ 					Rectangle rect = new Rectangle(x * scale, y * scale, scale, scale);
+ 					group.getChildren().add(rect);
+ 					rectList.add(rect);
+ 				}		
+ 				
+ 			}
+ 			
+ 		});
+		
 		buttonBox.getChildren().addAll(reset, play, pause, step, runSpeed, patternChooser,
 				new Separator(Orientation.VERTICAL), viewShowMore, viewShowLess);
 		buttonBox.setMinHeight(barHeight);

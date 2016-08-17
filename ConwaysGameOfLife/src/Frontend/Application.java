@@ -276,19 +276,7 @@ public class Application extends javafx.application.Application {
 					tl.play();
 			}
 		});
-		ComboBox<String> patternChooser = new ComboBox<String>(); // TODO
-																	// Replace
-																	// Object
-																	// typed
-																	// ComboBox
-																	// with
-																	// Pattern
-																	// typed
-																	// ComboBox
-																	// when
-																	// patterns
-																	// are
-																	// added.
+		ComboBox<String> patternChooser = new ComboBox<String>(); //Combo box contains strings for names of patterns from Pattern.
 		Pattern pattern = new Pattern();
 		patternChooser.getItems().addAll(pattern.patternNames);
 		

@@ -2,6 +2,10 @@ package Backend;
 
 public class Pattern {
 	
+	public static String[] patternNames = {"block", "beehive", "loaf", "boat", "blinker", "toad", "beacon", "pentadecathlon", "glider", "lwss", "rPent", "pulsar"};
+			
+			
+	
 	public static int[][] getPattern(String pattern, int x, int y) {
 		int[][] newPattern;
 		

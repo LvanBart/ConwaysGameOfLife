@@ -203,6 +203,9 @@ public class Application extends javafx.application.Application {
 		Button reset, play, pause, step, viewShowMore, viewShowLess;
 		reset = new Button("\u2B6F"); // Unicode character for an anticlockwise
 										// circular arrow.
+										//Currently doesn't work in windows,
+										//As the unicode font it uses doesn't 
+										//show this character.
 		reset.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {

@@ -206,9 +206,26 @@ public class Application extends javafx.application.Application {
 		reset.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				//Clear the grid.
+				Boolean timerWasRunning = (tl.getStatus() == Status.RUNNING); 
+				tl.stop(); //Stop the timeline. Unsure if strictly necessary. Maybe a threading thing.
+				group.getChildren().removeAll(rectList);//Clear the rectangles from the group.
+				world.getAlive().clear(); //Purge the world.
+				rectList.clear(); //Clear out all the rectangle representations.
 				//Reset the size? Maybe not.
-				//Populate the grid with the current combo choice.
+				
+ 				int[][] pattern = Pattern.getPattern(currentPattern, 0, 0); //Below re-used from the pattern button code.
+ 				for (int[] coords: pattern) {
+ 					//Populate the grid with the current combo choice.
+ 					int x = coords[0];
+ 					int y = coords[1];
+ 				
+ 					world.tobealive(x, y);
+ 					
+ 					Rectangle rect = new Rectangle(x * scale, y * scale, scale, scale);
+ 					group.getChildren().add(rect);
+ 					rectList.add(rect);
+ 				}		
+ 				if (timerWasRunning) tl.play(); //Start the timeline again.
 			}
 		});
 		play = new Button("\u23F5"); // Unicode character for a small rightward

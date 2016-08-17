@@ -211,9 +211,9 @@ public class Application extends javafx.application.Application {
 			public void handle(ActionEvent event) {
 				Boolean timerWasRunning = (tl.getStatus() == Status.RUNNING); 
 				tl.stop(); //Stop the timeline. Unsure if strictly necessary. Maybe a threading thing.
-				group.getChildren().removeAll(rectList);//Clear the rectangles from the group.
+//				group.getChildren().removeAll(rectList);//Clear the rectangles from the group.
 				world.getAlive().clear(); //Purge the world.
-				rectList.clear(); //Clear out all the rectangle representations.
+//				rectList.clear(); //Clear out all the rectangle representations.
 				
  				int[][] pattern = Pattern.getPattern(currentPattern, 0, 0); //Below re-used from the pattern button code.
  				for (int[] coords: pattern) {
@@ -223,10 +223,12 @@ public class Application extends javafx.application.Application {
  				
  					world.tobealive(x, y);
  					
- 					Rectangle rect = new Rectangle(x * scale, y * scale, scale, scale);
- 					group.getChildren().add(rect);
- 					rectList.add(rect);
+// 					Rectangle rect = new Rectangle(x * scale, y * scale, scale, scale);
+// 					group.getChildren().add(rect);
+// 					rectList.add(rect);
  				}		
+ 				drawCells(group);
+ 				
  				if (timerWasRunning) tl.play(); //Start the timeline again.
 			}
 		});
@@ -304,6 +306,7 @@ public class Application extends javafx.application.Application {
 		});
 		ComboBox<String> patternChooser = new ComboBox<String>(); //Combo box contains strings for names of patterns from Pattern.
 		patternChooser.getItems().addAll(Pattern.patternNames);
+		patternChooser.setValue(currentPattern);
 		
 		patternChooser.setOnAction(new EventHandler<ActionEvent>() {
  			@Override

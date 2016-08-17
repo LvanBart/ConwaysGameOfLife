@@ -184,7 +184,6 @@ public class Application extends javafx.application.Application {
 	public void changeTimer(Timeline timer) {
 		
 		KeyFrame kf = new KeyFrame(sliderTime, new EventHandler<ActionEvent>() {
-			int i = 0;
 
 			@Override
 			public void handle(ActionEvent t) { // Every frame.

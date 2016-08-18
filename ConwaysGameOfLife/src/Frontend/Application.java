@@ -2,7 +2,8 @@ package Frontend;
 
 import java.util.ArrayList;
 
-import Backend.*;
+import Backend.Pattern;
+import Backend.World;
 import javafx.animation.Animation.Status;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -13,6 +14,7 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Separator;
 import javafx.scene.control.Slider;
 import javafx.scene.input.MouseEvent;
@@ -55,14 +57,15 @@ public class Application extends javafx.application.Application {
 		tl.stop();
 
 		DrawCenterPane(group);
-		world.tobealive(0,0);
-		world.tobealive(1,1);
-		world.tobealive(1,2);
-		world.tobealive(0,2);
-		world.tobealive(-1,2);
+//		world.tobealive(0,0);
+//		world.tobealive(1,1);
+//		world.tobealive(1,2);
+//		world.tobealive(0,2);
+//		world.tobealive(-1,2);
 		drawCells(group);
-
-		bp.setCenter(group);
+		ScrollPane sp = new ScrollPane();
+		sp.setContent(group);
+		bp.setCenter(sp);
 		bp.setTop(setUpControls());
 
 		Scene scene = new Scene(bp);

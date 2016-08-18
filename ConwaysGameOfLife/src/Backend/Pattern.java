@@ -24,8 +24,7 @@ public class Pattern {
 			break;
 
 		case "boat":
-			newPattern = new int[][] { { x, y }, { x + 1, y }, { x, y + 1 }, { x + 2, y + 1 }, { x, y + 2 },
-					{ x + 1, y + 2 } };
+			newPattern = new int[][] { { x, y }, { x + 1, y }, { x, y + 1 }, { x + 2, y + 1 }, { x + 1, y + 2 } };
 			break;
 
 		case "blinker":

@@ -69,7 +69,7 @@ public class Application extends javafx.application.Application {
 		bp.setTop(setUpControls());
 
 		Scene scene = new Scene(bp);
-		scene.addEventFilter(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+		scene.addEventFilter(MouseEvent.MOUSE_DRAGGED, new EventHandler<MouseEvent>() {
 
 			@Override
 			public void handle(MouseEvent event) {

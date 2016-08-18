@@ -38,11 +38,14 @@ public class Pattern {
 			break;
 
 		case "beacon":
-			newPattern = new int[][] { { x, y }, { x, y + 1 }, { x + 3, y + 2 }, { x + 2, y + 3 }, { x + 3, y + 3 } };
+			newPattern = new int[][] { { x, y }, { x + 1, y }, { x, y + 1 }, { x + 3, y + 2 }, { x + 2, y + 3 },
+					{ x + 3, y + 3 } };
 			break;
 
 		case "pentadecathlon":
-			newPattern = new int[][] { { x, y }, { x + 1, y }, { x + 2, y } };
+			newPattern = new int[][] { { x + 2, y }, { x + 7, y }, { x, y + 1 }, { x + 1, y + 1 }, { x + 3, y + 1 },
+					{ x + 4, y + 1 }, { x + 5, y + 1 }, { x + 6, y + 1 }, { x + 8, y + 1 }, { x + 9, y + 1 },
+					{ x + 2, y + 2 }, { x + 7, y + 2 } };
 			break;
 
 		case "glider":
@@ -73,7 +76,7 @@ public class Pattern {
 			break;
 
 		default:
-			newPattern = new int[][] {{x, y}};
+			newPattern = new int[][] { { x, y } };
 			break;
 
 		}

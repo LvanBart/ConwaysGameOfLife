@@ -92,15 +92,35 @@ public class Application extends javafx.application.Application {
 					worldY = (int)(mouseY / scale);
 				}
 				
-				// toggle cells on/off
-				if (!world.checkAlive(new int[]{worldX, worldY})) {
-					world.tobealive(worldX, worldY);
-					Rectangle rect = new Rectangle(worldX * scale, worldY * scale, scale, scale);
-					rectList.add(rect);
-					group.getChildren().add(rect);
+				if (!currentPattern.equals("")) {
+					int[][] pattern = Pattern.getPattern(currentPattern, worldX, worldY);
+
+					for (int[] coords : pattern) {
+						int x = coords[0];
+						int y = coords[1];
+
+						if (!world.checkAlive(new int[] { x, y })) {
+							world.tobealive(x, y);
+							Rectangle rect = new Rectangle(x* scale, y * scale, scale, scale);
+							rectList.add(rect);
+							group.getChildren().add(rect);
+						} else {
+							world.removeAlive(new int[] { x, y });
+							drawCells(group);
+						}
+					}
 				} else {
-					world.removeAlive(new int[]{worldX, worldY});
-					drawCells(group);
+
+					// toggle cells on/off
+					if (!world.checkAlive(new int[] { worldX, worldY })) {
+						world.tobealive(worldX, worldY);
+						Rectangle rect = new Rectangle(worldX * scale, worldY * scale, scale, scale);
+						rectList.add(rect);
+						group.getChildren().add(rect);
+					} else {
+						world.removeAlive(new int[] { worldX, worldY });
+						drawCells(group);
+					}
 				}
 			}
 			

@@ -33,7 +33,7 @@ public class Application extends javafx.application.Application {
 	private Group group;
 	private ArrayList<Rectangle> rectList = new ArrayList<Rectangle>();
 	//private HashMap<int[], Rectangle> rectMap = new HashMap<int[], Rectangle>();
-	private String currentPattern = "glider";
+	private String currentPattern = " ";
 	
 	World world = new World();
 
@@ -92,36 +92,39 @@ public class Application extends javafx.application.Application {
 					worldY = (int)(mouseY / scale);
 				}
 				
+				// toggle cells on/off
 				if (!currentPattern.equals("")) {
-					int[][] pattern = Pattern.getPattern(currentPattern, worldX, worldY);
-
-					for (int[] coords : pattern) {
-						int x = coords[0];
-						int y = coords[1];
-
-						if (!world.checkAlive(new int[] { x, y })) {
-							world.tobealive(x, y);
-							Rectangle rect = new Rectangle(x* scale, y * scale, scale, scale);
-							rectList.add(rect);
-							group.getChildren().add(rect);
-						} else {
-							world.removeAlive(new int[] { x, y });
-							drawCells(group);
-						}
-					}
-				} else {
-
-					// toggle cells on/off
-					if (!world.checkAlive(new int[] { worldX, worldY })) {
-						world.tobealive(worldX, worldY);
-						Rectangle rect = new Rectangle(worldX * scale, worldY * scale, scale, scale);
-						rectList.add(rect);
-						group.getChildren().add(rect);
-					} else {
-						world.removeAlive(new int[] { worldX, worldY });
-						drawCells(group);
-					}
-				}
+ 					int[][] pattern = Pattern.getPattern(currentPattern, worldX, worldY);
+ 
+ 					for (int[] coords : pattern) {
+ 						int x = coords[0];
+ 						int y = coords[1];
+ 
+ 						if (!world.checkAlive(new int[] { x, y })) {
+ 							world.tobealive(x, y);
+ 							Rectangle rect = new Rectangle(x* scale, y * scale, scale, scale);
+ 							rectList.add(rect);
+ 							group.getChildren().add(rect);
+ 						} else {
+ 							world.removeAlive(new int[] { x, y });
+ 							drawCells(group);
+ 						}
+ 					}
+ 				} else {
+ 					world.removeAlive(new int[]{worldX, worldY});
+ 					drawCells(group);
+ 
+ 					// toggle cells on/off
+ 					if (!world.checkAlive(new int[] { worldX, worldY })) {
+ 						world.tobealive(worldX, worldY);
+ 						Rectangle rect = new Rectangle(worldX * scale, worldY * scale, scale, scale);
+ 						rectList.add(rect);
+ 						group.getChildren().add(rect);
+ 					} else {
+ 						world.removeAlive(new int[] { worldX, worldY });
+ 						drawCells(group);
+ 					}
+ 				}
 			}
 			
 		});
@@ -236,13 +239,16 @@ public class Application extends javafx.application.Application {
  				int[][] pattern = Pattern.getPattern(currentPattern, 0, 0); //Below re-used from the pattern button code.
  				for (int[] coords: pattern) {
  					//Populate the grid with the current combo choice.
- 					int x = coords[0];
- 					int y = coords[1];
+ 					//int x = coords[0];
+ 					//int y = coords[1];
  				
- 					world.tobealive(x, y);
+ 					//world.tobealive(x, y);
+ 					group.getChildren().removeAll(rectList);
+ 					rectList.clear();
+ 					world.getAlive().clear();
  					
  				}		
- 				drawCells(group);
+ 				//drawCells(group);
  				
  				if (timerWasRunning) tl.play(); //Start the timeline again.
 			}
@@ -328,15 +334,15 @@ public class Application extends javafx.application.Application {
  				currentPattern = patternChooser.getSelectionModel().getSelectedItem();
  				System.out.println(currentPattern);
  				int[][] pattern = Pattern.getPattern(currentPattern, 0, 0);
- 				world.getAlive().clear();
+ 				//world.getAlive().clear();
  				for (int[] coords: pattern) {
  					int x = coords[0];
  					int y = coords[1];
  				
- 					world.tobealive(x, y);
+ 					//world.tobealive(x, y);
  					
  				}
- 				drawCells(group);
+ 				//drawCells(group);
  				
  			}
  			

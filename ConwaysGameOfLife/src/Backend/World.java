@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.swing.plaf.synth.SynthSeparatorUI;
-
 public class World {
 	protected int x;
 	protected int y;
@@ -150,8 +148,6 @@ public class World {
 
 	public static void main(String args[]) {
 		ArrayList<int[]> Alive1 = new ArrayList<int[]>();
-		Set<int[]> Neighbourhood1 = new HashSet<int[]>();
-		Set<int[]> temp1 = new HashSet<int[]>();
 
 		int[] a = { 2, 2 };
 		Alive1.add(new int[] { 1, 1 });

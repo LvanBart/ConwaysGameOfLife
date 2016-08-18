@@ -63,9 +63,9 @@ public class Application extends javafx.application.Application {
 //		world.tobealive(0,2);
 //		world.tobealive(-1,2);
 		drawCells(group);
-		ScrollPane sp = new ScrollPane();
-		sp.setContent(group);
-		bp.setCenter(sp);
+		//ScrollPane sp = new ScrollPane();
+		//sp.setContent(group);
+		bp.setCenter(group);
 		bp.setTop(setUpControls());
 
 		Scene scene = new Scene(bp);

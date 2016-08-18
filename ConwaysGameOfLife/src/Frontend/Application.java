@@ -10,7 +10,6 @@ import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
-import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -20,6 +19,7 @@ import javafx.scene.control.Slider;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
@@ -32,7 +32,7 @@ public class Application extends javafx.application.Application {
 
 	private int scale = 10;
 	private int barHeight = 30;
-	private Group group;
+	private Pane group;
 	private ArrayList<Rectangle> rectList = new ArrayList<Rectangle>();
 	//private HashMap<int[], Rectangle> rectMap = new HashMap<int[], Rectangle>();
 	private String currentPattern = " ";
@@ -45,7 +45,9 @@ public class Application extends javafx.application.Application {
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		group = new Group();
+		group = new Pane();
+		group.minWidth(windowWidth);
+		group.minHeight(windowHeight-barHeight);
 		
 		
 		BorderPane bp = new BorderPane();
@@ -56,20 +58,20 @@ public class Application extends javafx.application.Application {
 		changeTimer(tl);
 		tl.stop();
 
-		DrawCenterPane(group);
+		//DrawCenterPane(group);
 //		world.tobealive(0,0);
 //		world.tobealive(1,1);
 //		world.tobealive(1,2);
 //		world.tobealive(0,2);
 //		world.tobealive(-1,2);
-		drawCells(group);
-		//ScrollPane sp = new ScrollPane();
-		//sp.setContent(group);
-		bp.setCenter(group);
+		//drawCells(group);
+		ScrollPane sp = new ScrollPane();
+		sp.setContent(group);
+		bp.setCenter(sp);
 		bp.setTop(setUpControls());
 
 		Scene scene = new Scene(bp);
-		scene.addEventFilter(MouseEvent.MOUSE_DRAGGED, new EventHandler<MouseEvent>() {
+		scene.addEventFilter(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
 
 			@Override
 			public void handle(MouseEvent event) {
@@ -80,9 +82,10 @@ public class Application extends javafx.application.Application {
 				}
 				
 				int worldX, worldY;
-				double mouseX = event.getX() - windowWidth / 2;
-				double mouseY = event.getY() - barHeight - (windowHeight-barHeight)/2;
-				
+				double mouseX = event.getX();
+				double mouseY = event.getY() - barHeight;
+				System.out.println(mouseX);
+				System.out.println(mouseY);
 				// convert scene mouse x and y position to world x and y position
 				if (mouseX < 0) {
 					worldX = (int)(mouseX / scale) - 1;
@@ -142,7 +145,7 @@ public class Application extends javafx.application.Application {
 
 	}
 
-	public void DrawCenterPane(Group group) {
+	public void DrawCenterPane(Pane group) {
 		
 		// Will redraw the grid based on window width & height and scale.
 		int minX = -(windowWidth / 2);
@@ -179,7 +182,7 @@ public class Application extends javafx.application.Application {
 		//return pane;
 	}
 	
-	public void drawCells(Group group) {
+	public void drawCells(Pane group) {
 		ArrayList<int[]> alive = world.getAlive();
 		group.getChildren().removeAll(rectList);
 		rectList.clear();
@@ -296,7 +299,7 @@ public class Application extends javafx.application.Application {
 			public void handle(ActionEvent arg0) {
 				if (scale <= 20) {
 					scale++;
-					DrawCenterPane(group);
+					//DrawCenterPane(group);
 					drawCells(group);
 				}
 			}
@@ -310,7 +313,7 @@ public class Application extends javafx.application.Application {
 			public void handle(ActionEvent arg0) {
 				if (scale > 1) {
 					scale--;
-					DrawCenterPane(group);
+					//DrawCenterPane(group);
 					drawCells(group);
 				}
 			}
